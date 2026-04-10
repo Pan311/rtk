@@ -189,8 +189,9 @@ pub fn run_trust(list: bool) -> Result<()> {
         println!("{}", "═".repeat(60));
         for (path, entry) in &trusted {
             let date = entry.trusted_at.get(..10).unwrap_or(&entry.trusted_at);
+            let sha_preview = entry.sha256.get(..12).unwrap_or(&entry.sha256);
             println!("  {} (trusted {})", path, date);
-            println!("    sha256:{}", entry.sha256);
+            println!("    sha256:{}…", sha_preview);
         }
         return Ok(());
     }
