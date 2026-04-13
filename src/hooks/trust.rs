@@ -190,7 +190,6 @@ pub fn run_trust(list: bool) -> Result<()> {
         for (path, entry) in &trusted {
             let date = entry.trusted_at.get(..10).unwrap_or(&entry.trusted_at);
             println!("  {} (trusted {})", path, date);
-            println!("    sha256:{}", entry.sha256);
         }
         return Ok(());
     }
