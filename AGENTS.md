@@ -14,6 +14,28 @@ rtk config
 rtk gain
 ```
 
+### PowerShell Command Optimization
+
+RTK now supports PowerShell cmdlets for token optimization:
+
+```powershell
+# Directory operations
+rtk powershell Get-ChildItem          # Optimized directory listing
+rtk powershell Get-ChildItem -Recurse # Recursive directory tree
+
+# Process management
+rtk powershell Get-Process            # Process list with CPU/memory
+rtk powershell Get-Process chrome     # Filter specific processes
+
+# Service management
+rtk powershell Get-Service            # Service status overview
+rtk powershell Get-Service -Name sshd # Specific service info
+
+# File operations
+rtk powershell Get-Content file.txt   # File content reading
+rtk powershell Get-Content *.log      # Multiple file content
+```
+
 ### Full Diagnostics (Recommended)
 ```powershell
 # Add this function to PowerShell profile:

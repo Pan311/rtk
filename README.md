@@ -51,6 +51,8 @@ rtk filters and compresses command outputs before they reach your LLM context. S
 | `pytest` | 4x | 8,000 | 800 | -90% |
 | `go test` | 3x | 6,000 | 600 | -90% |
 | `docker ps` | 3x | 900 | 180 | -80% |
+| `powershell Get-ChildItem` | 8x | 2,400 | 480 | -80% |
+| `powershell Get-Process` | 5x | 3,000 | 600 | -80% |
 | **Total** | | **~118,000** | **~23,900** | **-80%** |
 
 > Estimates based on medium-sized TypeScript/Rust projects. Actual savings vary by project size.
@@ -240,6 +242,16 @@ rtk summary <long command>      # Heuristic summary
 rtk proxy <command>             # Raw passthrough + tracking
 ```
 
+### PowerShell (Windows)
+```powershell
+rtk powershell Get-ChildItem          # Directory listing (ls/dir)
+rtk powershell Get-ChildItem -Recurse # Recursive directory tree
+rtk powershell Get-Process            # Process list with CPU/memory
+rtk powershell Get-Process chrome     # Filter specific processes
+rtk powershell Get-Service            # Windows service status
+rtk powershell Get-Content file.txt   # File content reading
+```
+
 ### Token Savings Analytics
 ```bash
 rtk gain                        # Summary stats
@@ -326,16 +338,20 @@ rtk init -g
 
 ### Native Windows (limited support)
 
-On native Windows (cmd.exe / PowerShell), RTK filters work but the hook does not auto-rewrite commands:
+On native Windows (cmd.exe / PowerShell), RTK filters work but the hook does not auto-rewrite commands. RTK now includes **PowerShell cmdlet support** for native Windows optimization:
 
 ```powershell
 # 1. Download and extract rtk-x86_64-pc-windows-msvc.zip from releases
 # 2. Add rtk.exe to your PATH
 # 3. Initialize (falls back to CLAUDE.md injection)
 rtk init -g
-# 4. Use rtk explicitly
+# 4. Use rtk explicitly for shell commands
 rtk cargo test
 rtk git status
+# 5. Use PowerShell cmdlets for Windows-specific operations
+rtk powershell Get-ChildItem          # Directory listing
+rtk powershell Get-Process            # Process management
+rtk powershell Get-Service            # Windows services
 ```
 
 **Important**: Do not double-click `rtk.exe` — it is a CLI tool that prints usage and exits immediately. Always run it from a terminal (Command Prompt, PowerShell, or Windows Terminal).
@@ -343,6 +359,7 @@ rtk git status
 | Feature | WSL | Native Windows |
 |---------|-----|----------------|
 | Filters (cargo, git, etc.) | Full | Full |
+| PowerShell cmdlets | N/A | Full (Get-ChildItem, Get-Process, etc.) |
 | Auto-rewrite hook | Yes | No (CLAUDE.md fallback) |
 | `rtk init -g` | Hook mode | CLAUDE.md mode |
 | `rtk gain` / analytics | Full | Full |

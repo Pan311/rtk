@@ -16,6 +16,7 @@ use cmds::js::{
     vitest_cmd,
 };
 use cmds::python::{mypy_cmd, pip_cmd, pytest_cmd, ruff_cmd};
+use cmds::powershell;
 use cmds::ruby::{rake_cmd, rspec_cmd, rubocop_cmd};
 use cmds::rust::{cargo_cmd, runner};
 use cmds::system::{
@@ -696,6 +697,15 @@ enum Commands {
     Hook {
         #[command(subcommand)]
         command: HookCommands,
+    },
+
+    /// PowerShell cmdlets with token-optimized output
+    Powershell {
+        /// PowerShell cmdlet name (e.g., Get-ChildItem, Get-Process, Get-Service)
+        cmdlet: String,
+        /// Additional arguments
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
     },
 }
 
@@ -2031,6 +2041,12 @@ fn run_cli() -> Result<i32> {
                 HookCommands::Copilot => hooks::hook_cmd::run_copilot()?,
             }
             0
+        }
+
+        Commands::Powershell { cmdlet, args } => {
+            let mut all_args = vec![cmdlet];
+            all_args.extend(args);
+            powershell::run(&all_args, cli.verbose)?
         }
 
         Commands::Rewrite { args } => {
