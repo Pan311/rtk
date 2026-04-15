@@ -42,7 +42,7 @@ pub struct TrackingConfig {
 impl Default for TrackingConfig {
     fn default() -> Self {
         Self {
-            enabled: false,
+            enabled: true,
             history_days: DEFAULT_HISTORY_DAYS as u32,
             database_path: None,
         }

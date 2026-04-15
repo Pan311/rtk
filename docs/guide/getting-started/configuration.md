@@ -23,7 +23,7 @@ rtk config --create   # create config file with defaults
 
 ```toml
 [tracking]
-enabled = false             # enable/disable token tracking
+enabled = true              # enable/disable token tracking
 history_days = 90           # retention in days (auto-cleanup)
 database_path = "/custom/path/tracking.db"  # optional override
 
