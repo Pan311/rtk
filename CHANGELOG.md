@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * **git:** remove `-u` short alias from `--ultra-compact` to fix `git push -u` upstream tracking ([#1086](https://github.com/rtk-ai/rtk/issues/1086))
 
-## [0.35.0](https://github.com/rtk-ai/rtk/compare/v0.34.4...v0.35.0) (2026-04-20)
+## [0.35.1](https://github.com/rtk-ai/rtk/compare/v0.35.0...v0.35.1) (2026-04-20)
 
 ### Features
 
