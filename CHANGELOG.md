@@ -11,7 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * **git:** remove `-u` short alias from `--ultra-compact` to fix `git push -u` upstream tracking ([#1086](https://github.com/rtk-ai/rtk/issues/1086))
 
-## [0.35.0](https://github.com/rtk-ai/rtk/compare/v0.34.3...v0.35.0) (2026-04-06)
+## [0.35.0](https://github.com/rtk-ai/rtk/compare/v0.34.4...v0.35.0) (2026-04-20)
+
+### Features
+
+* **powershell:** add 11 new Windows-specific cmdlets for token optimization (70-85% savings)
+  - Registry operations: `Get-ItemProperty`, `Set-ItemProperty`
+  - Network operations: `Test-NetConnection`, `Get-NetAdapter`, `Get-NetTCPConnection`
+  - System information: `Get-ComputerInfo`, `Get-SystemInfo`
+  - Package management: `Get-Package`, `Install-Package`
+  - Event logs: `Get-EventLog`, `Clear-EventLog`
+  - Performance monitoring: `Get-Counter`
 
 
 ### Features
