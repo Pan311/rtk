@@ -131,7 +131,12 @@ fn run_diff(
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            eprintln!("{}", stderr);
+            // Gracefully handle "not a git repository" error
+            if stderr.contains("not a git repository") {
+                eprintln!("Not a git repository");
+            } else {
+                eprintln!("{}", stderr);
+            }
             return Ok(exit_code_from_output(&output, "git"));
         }
 
@@ -161,6 +166,20 @@ fn run_diff(
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
+        
+        // Gracefully handle "not a git repository" error
+        if stderr.contains("not a git repository") {
+            let message = "Not a git repository".to_string();
+            eprintln!("{}", message);
+            timer.track(
+                &format!("git diff {}", args.join(" ")),
+                &format!("rtk git diff {}", args.join(" ")),
+                &stat_stdout,
+                &message,
+            );
+            return Ok(exit_code_from_output(&output, "git"));
+        }
+        
         if !stderr.trim().is_empty() {
             eprint!("{}", stderr);
         }
@@ -240,7 +259,12 @@ fn run_show(
         let output = cmd.output().context("Failed to run git show")?;
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            eprintln!("{}", stderr);
+            // Gracefully handle "not a git repository" error
+            if stderr.contains("not a git repository") {
+                eprintln!("Not a git repository");
+            } else {
+                eprintln!("{}", stderr);
+            }
             return Ok(exit_code_from_output(&output, "git"));
         }
         let stdout = String::from_utf8_lossy(&output.stdout);
@@ -280,7 +304,12 @@ fn run_show(
     let summary_output = summary_cmd.output().context("Failed to run git show")?;
     if !summary_output.status.success() {
         let stderr = String::from_utf8_lossy(&summary_output.stderr);
-        eprintln!("{}", stderr);
+        // Gracefully handle "not a git repository" error
+        if stderr.contains("not a git repository") {
+            eprintln!("Not a git repository");
+        } else {
+            eprintln!("{}", stderr);
+        }
         return Ok(exit_code_from_output(&summary_output, "git"));
     }
     let summary = String::from_utf8_lossy(&summary_output.stdout);
@@ -486,7 +515,12 @@ fn run_log(
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        eprintln!("{}", stderr);
+        // Gracefully handle "not a git repository" error
+        if stderr.contains("not a git repository") {
+            eprintln!("Not a git repository");
+        } else {
+            eprintln!("{}", stderr);
+        }
         return Ok(exit_code_from_output(&output, "git"));
     }
 
@@ -797,6 +831,19 @@ fn run_status(args: &[String], verbose: u8, global_args: &[String]) -> Result<i3
         let stderr = String::from_utf8_lossy(&output.stderr);
 
         if !output.status.success() {
+            // Gracefully handle "not a git repository" error
+            if stderr.contains("not a git repository") {
+                let message = "Not a git repository".to_string();
+                eprintln!("{}", message);
+                timer.track(
+                    &format!("git status {}", args.join(" ")),
+                    &format!("rtk git status {}", args.join(" ")),
+                    &stdout,
+                    &message,
+                );
+                return Ok(exit_code_from_output(&output, "git"));
+            }
+            
             if !stderr.trim().is_empty() {
                 eprint!("{}", stderr);
             }
@@ -919,12 +966,18 @@ fn run_add(args: &[String], verbose: u8, global_args: &[String]) -> Result<i32> 
     } else {
         let stderr = String::from_utf8_lossy(&output.stderr);
         let stdout = String::from_utf8_lossy(&output.stdout);
-        eprintln!("FAILED: git add");
-        if !stderr.trim().is_empty() {
-            eprintln!("{}", stderr);
-        }
-        if !stdout.trim().is_empty() {
-            eprintln!("{}", stdout);
+        
+        // Gracefully handle "not a git repository" error
+        if stderr.contains("not a git repository") || stdout.contains("not a git repository") {
+            eprintln!("Not a git repository");
+        } else {
+            eprintln!("FAILED: git add");
+            if !stderr.trim().is_empty() {
+                eprintln!("{}", stderr);
+            }
+            if !stdout.trim().is_empty() {
+                eprintln!("{}", stdout);
+            }
         }
         return Ok(exit_code_from_output(&output, "git"));
     }
@@ -988,13 +1041,19 @@ fn run_commit(args: &[String], verbose: u8, global_args: &[String]) -> Result<i3
             "ok (nothing to commit)",
         );
     } else {
-        if !stderr.trim().is_empty() {
-            eprint!("{}", stderr);
+        // Gracefully handle "not a git repository" error
+        if stderr.contains("not a git repository") || stdout.contains("not a git repository") {
+            eprintln!("Not a git repository");
+            timer.track(&original_cmd, "rtk git commit", &raw_output, "Not a git repository");
+        } else {
+            if !stderr.trim().is_empty() {
+                eprint!("{}", stderr);
+            }
+            if !stdout.trim().is_empty() {
+                eprint!("{}", stdout);
+            }
+            timer.track(&original_cmd, "rtk git commit", &raw_output, &raw_output);
         }
-        if !stdout.trim().is_empty() {
-            eprint!("{}", stdout);
-        }
-        timer.track(&original_cmd, "rtk git commit", &raw_output, &raw_output);
         return Ok(exit_code_from_output(&output, "git"));
     }
 
@@ -1050,12 +1109,17 @@ fn run_push(args: &[String], verbose: u8, global_args: &[String]) -> Result<i32>
             &compact,
         );
     } else {
-        eprintln!("FAILED: git push");
-        if !stderr.trim().is_empty() {
-            eprintln!("{}", stderr);
-        }
-        if !stdout.trim().is_empty() {
-            eprintln!("{}", stdout);
+        // Gracefully handle "not a git repository" error
+        if stderr.contains("not a git repository") || stdout.contains("not a git repository") {
+            eprintln!("Not a git repository");
+        } else {
+            eprintln!("FAILED: git push");
+            if !stderr.trim().is_empty() {
+                eprintln!("{}", stderr);
+            }
+            if !stdout.trim().is_empty() {
+                eprintln!("{}", stdout);
+            }
         }
         return Ok(exit_code_from_output(&output, "git"));
     }
@@ -1136,12 +1200,17 @@ fn run_pull(args: &[String], verbose: u8, global_args: &[String]) -> Result<i32>
             &compact,
         );
     } else {
-        eprintln!("FAILED: git pull");
-        if !stderr.trim().is_empty() {
-            eprintln!("{}", stderr);
-        }
-        if !stdout.trim().is_empty() {
-            eprintln!("{}", stdout);
+        // Gracefully handle "not a git repository" error
+        if stderr.contains("not a git repository") || stdout.contains("not a git repository") {
+            eprintln!("Not a git repository");
+        } else {
+            eprintln!("FAILED: git pull");
+            if !stderr.trim().is_empty() {
+                eprintln!("{}", stderr);
+            }
+            if !stdout.trim().is_empty() {
+                eprintln!("{}", stdout);
+            }
         }
         return Ok(exit_code_from_output(&output, "git"));
     }
@@ -1219,9 +1288,15 @@ fn run_branch(args: &[String], verbose: u8, global_args: &[String]) -> Result<i3
         if output.status.success() {
             println!("{}", trimmed);
         } else {
-            eprintln!("FAILED: git branch {}", args.join(" "));
-            if !stderr.trim().is_empty() {
-                eprintln!("{}", stderr);
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            // Gracefully handle "not a git repository" error
+            if stderr.contains("not a git repository") {
+                eprintln!("Not a git repository");
+            } else {
+                eprintln!("FAILED: git branch {}", args.join(" "));
+                if !stderr.trim().is_empty() {
+                    eprintln!("{}", stderr);
+                }
             }
             return Ok(exit_code_from_output(&output, "git"));
         }
@@ -1256,12 +1331,18 @@ fn run_branch(args: &[String], verbose: u8, global_args: &[String]) -> Result<i3
         if output.status.success() {
             println!("ok");
         } else {
-            eprintln!("FAILED: git branch {}", args.join(" "));
-            if !stderr.trim().is_empty() {
-                eprintln!("{}", stderr);
-            }
-            if !stdout.trim().is_empty() {
-                eprintln!("{}", stdout);
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            // Gracefully handle "not a git repository" error
+            if stderr.contains("not a git repository") {
+                eprintln!("Not a git repository");
+            } else {
+                eprintln!("FAILED: git branch {}", args.join(" "));
+                if !stderr.trim().is_empty() {
+                    eprintln!("{}", stderr);
+                }
+                if !stdout.trim().is_empty() {
+                    eprintln!("{}", stdout);
+                }
             }
             return Ok(exit_code_from_output(&output, "git"));
         }
@@ -1285,14 +1366,20 @@ fn run_branch(args: &[String], verbose: u8, global_args: &[String]) -> Result<i3
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        if !stderr.trim().is_empty() {
-            eprint!("{}", stderr);
+        // Gracefully handle "not a git repository" error
+        if stderr.contains("not a git repository") {
+            eprintln!("Not a git repository");
+        } else {
+            eprintln!("FAILED: git branch {}", args.join(" "));
+            if !stderr.trim().is_empty() {
+                eprint!("{}", stderr);
+            }
         }
         timer.track(
             &format!("git branch {}", args.join(" ")),
             &format!("rtk git branch {}", args.join(" ")),
             &raw,
-            &raw,
+            "failed",
         );
         return Ok(exit_code_from_output(&output, "git"));
     }
@@ -1383,9 +1470,15 @@ fn run_fetch(args: &[String], verbose: u8, global_args: &[String]) -> Result<i32
     let raw = format!("{}{}", stdout, stderr);
 
     if !output.status.success() {
-        eprintln!("FAILED: git fetch");
-        if !stderr.trim().is_empty() {
-            eprintln!("{}", stderr);
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        // Gracefully handle "not a git repository" error
+        if stderr.contains("not a git repository") {
+            eprintln!("Not a git repository");
+        } else {
+            eprintln!("FAILED: git fetch");
+            if !stderr.trim().is_empty() {
+                eprintln!("{}", stderr);
+            }
         }
         return Ok(exit_code_from_output(&output, "git"));
     }
@@ -1479,9 +1572,14 @@ fn run_stash(
                 println!("{}", msg);
                 msg
             } else {
-                eprintln!("FAILED: git stash {}", sub);
-                if !stderr.trim().is_empty() {
-                    eprintln!("{}", stderr);
+                // Gracefully handle "not a git repository" error
+                if stderr.contains("not a git repository") {
+                    eprintln!("Not a git repository");
+                } else {
+                    eprintln!("FAILED: git stash {}", sub);
+                    if !stderr.trim().is_empty() {
+                        eprintln!("{}", stderr);
+                    }
                 }
                 combined.clone()
             };
@@ -1514,9 +1612,14 @@ fn run_stash(
                 println!("{}", msg);
                 msg
             } else {
-                eprintln!("FAILED: git stash {}", sub);
-                if !stderr.trim().is_empty() {
-                    eprintln!("{}", stderr);
+                // Gracefully handle "not a git repository" error
+                if stderr.contains("not a git repository") {
+                    eprintln!("Not a git repository");
+                } else {
+                    eprintln!("FAILED: git stash {}", sub);
+                    if !stderr.trim().is_empty() {
+                        eprintln!("{}", stderr);
+                    }
                 }
                 combined.clone()
             };
@@ -1555,9 +1658,15 @@ fn run_stash(
                     msg.to_string()
                 }
             } else {
-                eprintln!("FAILED: git stash");
-                if !stderr.trim().is_empty() {
-                    eprintln!("{}", stderr);
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                // Gracefully handle "not a git repository" error
+                if stderr.contains("not a git repository") {
+                    eprintln!("Not a git repository");
+                } else {
+                    eprintln!("FAILED: git stash");
+                    if !stderr.trim().is_empty() {
+                        eprintln!("{}", stderr);
+                    }
                 }
                 combined.clone()
             };
@@ -1633,9 +1742,15 @@ fn run_worktree(args: &[String], verbose: u8, global_args: &[String]) -> Result<
         if output.status.success() {
             println!("ok");
         } else {
-            eprintln!("FAILED: git worktree {}", args.join(" "));
-            if !stderr.trim().is_empty() {
-                eprintln!("{}", stderr);
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            // Gracefully handle "not a git repository" error
+            if stderr.contains("not a git repository") {
+                eprintln!("Not a git repository");
+            } else {
+                eprintln!("FAILED: git worktree {}", args.join(" "));
+                if !stderr.trim().is_empty() {
+                    eprintln!("{}", stderr);
+                }
             }
             return Ok(exit_code_from_output(&output, "git"));
         }
