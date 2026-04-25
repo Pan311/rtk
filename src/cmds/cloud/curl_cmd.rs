@@ -1,7 +1,7 @@
 //! Runs curl and auto-compresses JSON responses.
 
 use crate::core::tracking;
-use crate::core::utils::{exit_code_from_output, resolved_command, truncate};
+use crate::core::utils::{exit_code_from_output, preserve_working_dir, resolved_command, truncate};
 use crate::json_cmd;
 use anyhow::{Context, Result};
 
@@ -10,6 +10,7 @@ use anyhow::{Context, Result};
 pub fn run(args: &[String], verbose: u8) -> Result<i32> {
     let timer = tracking::TimedExecution::start();
     let mut cmd = resolved_command("curl");
+    preserve_working_dir(&mut cmd);
     cmd.arg("-s"); // Silent mode (no progress bar)
 
     for arg in args {

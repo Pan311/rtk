@@ -2,7 +2,7 @@
 
 use crate::core::config;
 use crate::core::tracking;
-use crate::core::utils::{exit_code_from_output, exit_code_from_status, resolved_command};
+use crate::core::utils::{exit_code_from_output, exit_code_from_status, resolved_command, preserve_working_dir};
 use std::process::Stdio;
 use anyhow::{Context, Result};
 use std::ffi::OsString;
@@ -28,6 +28,7 @@ pub enum GitCommand {
 /// prepended before any subcommand arguments.
 fn git_cmd(global_args: &[String]) -> Command {
     let mut cmd = resolved_command("git");
+    preserve_working_dir(&mut cmd);
     for arg in global_args {
         cmd.arg(arg);
     }

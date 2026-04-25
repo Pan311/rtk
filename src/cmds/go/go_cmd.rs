@@ -2,7 +2,7 @@
 
 use crate::core::runner;
 use crate::core::tracking;
-use crate::core::utils::{exit_code_from_output, resolved_command, truncate};
+use crate::core::utils::{exit_code_from_output, preserve_working_dir, resolved_command, truncate};
 use crate::golangci_cmd;
 use anyhow::{Context, Result};
 use serde::Deserialize;
@@ -44,6 +44,7 @@ struct PackageResult {
 
 pub fn run_test(args: &[String], verbose: u8) -> Result<i32> {
     let mut cmd = resolved_command("go");
+    preserve_working_dir(&mut cmd);
     cmd.arg("test");
 
     if !args.iter().any(|a| a == "-json") {
@@ -69,6 +70,7 @@ pub fn run_test(args: &[String], verbose: u8) -> Result<i32> {
 
 pub fn run_build(args: &[String], verbose: u8) -> Result<i32> {
     let mut cmd = resolved_command("go");
+    preserve_working_dir(&mut cmd);
     cmd.arg("build");
 
     for arg in args {
@@ -90,6 +92,7 @@ pub fn run_build(args: &[String], verbose: u8) -> Result<i32> {
 
 pub fn run_vet(args: &[String], verbose: u8) -> Result<i32> {
     let mut cmd = resolved_command("go");
+    preserve_working_dir(&mut cmd);
     cmd.arg("vet");
 
     for arg in args {
@@ -125,6 +128,7 @@ pub fn run_other(args: &[OsString], verbose: u8) -> Result<i32> {
 
     let subcommand = args[0].to_string_lossy();
     let mut cmd = resolved_command("go");
+    preserve_working_dir(&mut cmd);
     cmd.arg(&*subcommand);
 
     for arg in &args[1..] {
@@ -159,7 +163,9 @@ pub fn run_other(args: &[OsString], verbose: u8) -> Result<i32> {
 /// Detect golangci-lint major version when invoked via `go tool`.
 /// Returns 1 on any failure (safe fallback — v1 behaviour).
 fn detect_go_tool_golangci_version() -> u32 {
-    let output = resolved_command("go")
+    let mut cmd = resolved_command("go");
+    preserve_working_dir(&mut cmd);
+    let output = cmd
         .arg("tool")
         .arg("golangci-lint")
         .arg("--version")

@@ -2,7 +2,7 @@
 
 use crate::core::runner::{self, RunOptions};
 use crate::core::tracking;
-use crate::core::utils::{exit_code_from_output, resolved_command};
+use crate::core::utils::{exit_code_from_output, preserve_working_dir, resolved_command};
 use anyhow::{Context, Result};
 use serde_json::Value;
 use std::ffi::OsString;
@@ -53,13 +53,17 @@ where
 fn docker_ps(_verbose: u8) -> Result<i32> {
     let timer = tracking::TimedExecution::start();
 
-    let raw = resolved_command("docker")
+    let mut raw_cmd = resolved_command("docker");
+    preserve_working_dir(&mut raw_cmd);
+    let raw = raw_cmd
         .args(["ps"])
         .output()
         .map(|o| String::from_utf8_lossy(&o.stdout).to_string())
         .unwrap_or_default();
 
-    let output = resolved_command("docker")
+    let mut output_cmd = resolved_command("docker");
+    preserve_working_dir(&mut output_cmd);
+    let output = output_cmd
         .args([
             "ps",
             "--format",
@@ -122,13 +126,17 @@ fn docker_ps(_verbose: u8) -> Result<i32> {
 fn docker_images(_verbose: u8) -> Result<i32> {
     let timer = tracking::TimedExecution::start();
 
-    let raw = resolved_command("docker")
+    let mut raw_cmd = resolved_command("docker");
+    preserve_working_dir(&mut raw_cmd);
+    let raw = raw_cmd
         .args(["images"])
         .output()
         .map(|o| String::from_utf8_lossy(&o.stdout).to_string())
         .unwrap_or_default();
 
-    let output = resolved_command("docker")
+    let mut output_cmd = resolved_command("docker");
+    preserve_working_dir(&mut output_cmd);
+    let output = output_cmd
         .args(["images", "--format", "{{.Repository}}:{{.Tag}}\t{{.Size}}"])
         .output()
         .context("Failed to run docker images")?;
@@ -208,6 +216,7 @@ fn docker_logs(args: &[String], _verbose: u8) -> Result<i32> {
     }
 
     let mut cmd = resolved_command("docker");
+    preserve_working_dir(&mut cmd);
     cmd.args(["logs", "--tail", "100", container]);
 
     let label = format!("logs {}", container);
@@ -228,6 +237,7 @@ fn docker_logs(args: &[String], _verbose: u8) -> Result<i32> {
 
 fn kubectl_pods(args: &[String], _verbose: u8) -> Result<i32> {
     let mut cmd = resolved_command("kubectl");
+    preserve_working_dir(&mut cmd);
     cmd.args(["get", "pods", "-o", "json"]);
     for arg in args {
         cmd.arg(arg);
@@ -307,6 +317,7 @@ fn format_kubectl_pods(json: &Value) -> String {
 
 fn kubectl_services(args: &[String], _verbose: u8) -> Result<i32> {
     let mut cmd = resolved_command("kubectl");
+    preserve_working_dir(&mut cmd);
     cmd.args(["get", "services", "-o", "json"]);
     for arg in args {
         cmd.arg(arg);
@@ -365,6 +376,7 @@ fn kubectl_logs(args: &[String], _verbose: u8) -> Result<i32> {
     }
 
     let mut cmd = resolved_command("kubectl");
+    preserve_working_dir(&mut cmd);
     cmd.args(["logs", "--tail", "100", pod]);
     for arg in args.iter().skip(1) {
         cmd.arg(arg);
@@ -532,7 +544,9 @@ pub fn run_compose_ps(verbose: u8) -> Result<i32> {
     let timer = tracking::TimedExecution::start();
 
     // Raw output for token tracking
-    let raw_output = resolved_command("docker")
+    let mut raw_cmd = resolved_command("docker");
+    preserve_working_dir(&mut raw_cmd);
+    let raw_output = raw_cmd
         .args(["compose", "ps"])
         .output()
         .context("Failed to run docker compose ps")?;
@@ -545,7 +559,9 @@ pub fn run_compose_ps(verbose: u8) -> Result<i32> {
     let raw = String::from_utf8_lossy(&raw_output.stdout).to_string();
 
     // Structured output for parsing (same pattern as docker_ps)
-    let output = resolved_command("docker")
+    let mut output_cmd = resolved_command("docker");
+    preserve_working_dir(&mut output_cmd);
+    let output = output_cmd
         .args([
             "compose",
             "ps",
@@ -574,6 +590,7 @@ pub fn run_compose_ps(verbose: u8) -> Result<i32> {
 
 pub fn run_compose_logs(service: Option<&str>, verbose: u8) -> Result<i32> {
     let mut cmd = resolved_command("docker");
+    preserve_working_dir(&mut cmd);
     cmd.args(["compose", "logs", "--tail", "100"]);
     if let Some(svc) = service {
         cmd.arg(svc);
@@ -596,6 +613,7 @@ pub fn run_compose_logs(service: Option<&str>, verbose: u8) -> Result<i32> {
 
 pub fn run_compose_build(service: Option<&str>, verbose: u8) -> Result<i32> {
     let mut cmd = resolved_command("docker");
+    preserve_working_dir(&mut cmd);
     cmd.args(["compose", "build"]);
     if let Some(svc) = service {
         cmd.arg(svc);

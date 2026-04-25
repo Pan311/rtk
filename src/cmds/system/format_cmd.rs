@@ -1,7 +1,7 @@
 //! Runs code formatters (Prettier, Ruff) and shows only files that changed.
 
 use crate::core::tracking;
-use crate::core::utils::{exit_code_from_output, package_manager_exec, resolved_command};
+use crate::core::utils::{exit_code_from_output, package_manager_exec, preserve_working_dir, resolved_command};
 use crate::prettier_cmd;
 use crate::ruff_cmd;
 use anyhow::{Context, Result};
@@ -73,9 +73,17 @@ pub fn run(args: &[String], verbose: u8) -> Result<i32> {
     // Build command based on formatter
     let mut cmd = match formatter.as_str() {
         "prettier" => package_manager_exec("prettier"),
-        "black" | "ruff" => resolved_command(formatter.as_str()),
+        "black" | "ruff" => {
+            let mut c = resolved_command(formatter.as_str());
+            preserve_working_dir(&mut c);
+            c
+        },
         "biome" => package_manager_exec("biome"),
-        _ => resolved_command(formatter.as_str()),
+        _ => {
+            let mut c = resolved_command(formatter.as_str());
+            preserve_working_dir(&mut c);
+            c
+        },
     };
 
     // Add formatter-specific flags

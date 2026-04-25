@@ -2,7 +2,7 @@
 
 use crate::core::config;
 use crate::core::runner;
-use crate::core::utils::{resolved_command, truncate};
+use crate::core::utils::{preserve_working_dir, resolved_command, truncate};
 use anyhow::Result;
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -127,6 +127,7 @@ fn run_filtered(original_args: &[String], invocation: &RunInvocation, verbose: u
     let version = detect_major_version();
 
     let mut cmd = resolved_command("golangci-lint");
+    preserve_working_dir(&mut cmd);
     for arg in build_filtered_args(invocation, version) {
         cmd.arg(arg);
     }

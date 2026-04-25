@@ -2,7 +2,8 @@
 
 use crate::core::tracking;
 use crate::core::utils::{
-    exit_code_from_output, ok_confirmation, resolved_command, strip_ansi, truncate,
+    exit_code_from_output, ok_confirmation, preserve_working_dir, resolved_command, strip_ansi,
+    truncate,
 };
 use anyhow::{Context, Result};
 use lazy_static::lazy_static;
@@ -31,6 +32,7 @@ fn run_gt_filtered(
     let timer = tracking::TimedExecution::start();
 
     let mut cmd = resolved_command("gt");
+    preserve_working_dir(&mut cmd);
     for part in subcmd {
         cmd.arg(part);
     }

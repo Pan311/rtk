@@ -1,5 +1,5 @@
 use crate::core::tracking;
-use crate::core::utils::{exit_code_from_output, resolved_command};
+use crate::core::utils::{exit_code_from_output, preserve_working_dir, resolved_command};
 use anyhow::{Context, Result};
 
 /// Compact wget - strips progress bars, shows only result
@@ -19,7 +19,9 @@ pub fn run(url: &str, args: &[String], verbose: u8) -> Result<i32> {
     }
     cmd_args.push(url);
 
-    let output = resolved_command("wget")
+    let mut cmd = resolved_command("wget");
+    preserve_working_dir(&mut cmd);
+    let output = cmd
         .args(&cmd_args)
         .output()
         .context("Failed to run wget")?;
@@ -65,7 +67,9 @@ pub fn run_stdout(url: &str, args: &[String], verbose: u8) -> Result<i32> {
     }
     cmd_args.push(url);
 
-    let output = resolved_command("wget")
+    let mut cmd = resolved_command("wget");
+    preserve_working_dir(&mut cmd);
+    let output = cmd
         .args(&cmd_args)
         .output()
         .context("Failed to run wget")?;

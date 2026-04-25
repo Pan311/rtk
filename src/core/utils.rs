@@ -337,7 +337,7 @@ pub fn resolve_binary(name: &str) -> Result<PathBuf> {
 /// # Returns
 /// A `Command` configured with the resolved binary path.
 pub fn resolved_command(name: &str) -> Command {
-    match resolve_binary(name) {
+    let mut cmd = match resolve_binary(name) {
         Ok(path) => Command::new(path),
         Err(e) => {
             // On Windows, resolution failure likely means a .CMD/.BAT wrapper
@@ -358,7 +358,11 @@ pub fn resolved_command(name: &str) -> Command {
             }
             Command::new(name)
         }
+    };
+    if let Ok(cwd) = std::env::current_dir() {
+        cmd.current_dir(cwd);
     }
+    cmd
 }
 
 /// Check if a tool exists on PATH (PATHEXT-aware on Windows).
@@ -366,6 +370,34 @@ pub fn resolved_command(name: &str) -> Command {
 /// Replaces manual `Command::new("which").arg(tool)` checks that fail on Windows.
 pub fn tool_exists(name: &str) -> bool {
     which::which(name).is_ok()
+}
+
+/// Preserve the current working directory when spawning a child process.
+///
+/// By default, `Command::new()` doesn't inherit the parent's working directory.
+/// This helper ensures child processes start in the same directory as the parent,
+/// which is essential for tools that expect to run in a specific context
+/// (e.g., git in a repository, npm in a project directory).
+///
+/// This is a safe no-op on failure — if the current directory can't be determined,
+/// the command simply uses the system default behavior.
+///
+/// # Arguments
+/// * `cmd` - Mutable reference to a Command to configure
+///
+/// # Examples
+/// ```no_run
+/// use std::process::Command;
+/// use rtk::core::utils::preserve_working_dir;
+///
+/// let mut cmd = Command::new("git");
+/// preserve_working_dir(&mut cmd);
+/// cmd.arg("status").output();
+/// ```
+pub fn preserve_working_dir(cmd: &mut Command) {
+    if let Ok(cwd) = std::env::current_dir() {
+        cmd.current_dir(cwd);
+    }
 }
 
 /// Extract short name from AWS ARN.

@@ -1,7 +1,7 @@
 //! Filters pnpm output — dependency trees, install logs, outdated packages.
 
 use crate::core::tracking;
-use crate::core::utils::resolved_command;
+use crate::core::utils::{resolved_command, preserve_working_dir};
 use anyhow::{Context, Result};
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -304,6 +304,7 @@ fn run_list(depth: usize, args: &[String], verbose: u8) -> Result<i32> {
     let timer = tracking::TimedExecution::start();
 
     let mut cmd = resolved_command("pnpm");
+    preserve_working_dir(&mut cmd);
     cmd.arg("list");
     cmd.arg(format!("--depth={}", depth));
     cmd.arg("--json");
@@ -361,6 +362,7 @@ fn run_outdated(args: &[String], verbose: u8) -> Result<i32> {
     let timer = tracking::TimedExecution::start();
 
     let mut cmd = resolved_command("pnpm");
+    preserve_working_dir(&mut cmd);
     cmd.arg("outdated");
     cmd.arg("--format");
     cmd.arg("json");

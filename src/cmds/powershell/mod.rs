@@ -682,6 +682,11 @@ fn run_powershell_passthrough(args: &[String], _verbose: u8) -> Result<i32> {
     let mut cmd = resolved_command("powershell.exe");
     cmd.arg("-Command").arg(&command);
 
+    // Preserve current working directory
+    if let Ok(cwd) = std::env::current_dir() {
+        cmd.current_dir(cwd);
+    }
+
     let output = cmd.output().context("Failed to run PowerShell command")?;
     let stdout = String::from_utf8_lossy(&output.stdout).to_string();
     let stderr = String::from_utf8_lossy(&output.stderr).to_string();
@@ -716,6 +721,11 @@ struct PowerShellOutput {
 fn execute_powershell_command(command: &str, name: &str) -> Result<PowerShellOutput> {
     let mut cmd = resolved_command("powershell.exe");
     cmd.arg("-Command").arg(command);
+
+    // Preserve current working directory
+    if let Ok(cwd) = std::env::current_dir() {
+        cmd.current_dir(cwd);
+    }
 
     let output = cmd
         .output()
@@ -1497,10 +1507,17 @@ OsArchitecture          : 64-bit
 
     #[test]
     fn test_filter_get_package_output_truncates() {
-        let input = (0..60)
-            .map(|i| format!("Package{}    1.0.0    Programs    Installed", i))
-            .collect::<Vec<_>>()
-            .join("\n");
+        let input = format!(
+            "{}\n{}",
+            "Name                           Version          ProviderName     Source",
+            (0..60)
+                .map(|i| format!(
+                    "Package{}                       1.0.0            Programs          Installed",
+                    i
+                ))
+                .collect::<Vec<_>>()
+                .join("\n")
+        );
         let filtered = filter_get_package_output(&input);
         assert!(filtered.contains("... [truncated"));
         assert!(filtered.lines().count() < 60);
@@ -1535,10 +1552,13 @@ OsArchitecture          : 64-bit
 
     #[test]
     fn test_filter_get_nettcpconnection_output_truncates() {
-        let input = (0..120)
-            .map(|_i| format!("192.168.1.100    54321    8.8.8.8    53    Listen    1234"))
-            .collect::<Vec<_>>()
-            .join("\n");
+        let input = format!("{}\n{}",
+            "LocalAddress                        LocalPort RemoteAddress                       RemotePort State       AppliedSetting OwningProcess",
+            (0..120)
+                .map(|_i| format!("192.168.1.100                        54321     8.8.8.8                             53         Listen     Internet       1234"))
+                .collect::<Vec<_>>()
+                .join("\n")
+        );
         let filtered = filter_get_nettcpconnection_output(&input);
         assert!(filtered.contains("... [truncated"));
         assert!(filtered.lines().count() < 120);

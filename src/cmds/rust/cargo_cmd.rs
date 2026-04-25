@@ -1,7 +1,7 @@
 //! Filters cargo output — build errors, test results, clippy warnings.
 
 use crate::core::runner;
-use crate::core::utils::{resolved_command, truncate};
+use crate::core::utils::{resolved_command, preserve_working_dir, truncate};
 use anyhow::Result;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -80,6 +80,7 @@ where
     F: Fn(&str) -> String,
 {
     let mut cmd = resolved_command("cargo");
+    preserve_working_dir(&mut cmd);
     cmd.arg(subcommand);
 
     let restored_args = restore_double_dash(args);

@@ -1,0 +1,28 @@
+[
+  {
+    "FilePath": "src/Program.cs",
+    "FileChanges": [
+      {
+        "LineNumber": 42,
+        "CharNumber": 17,
+        "DiagnosticId": "WHITESPACE",
+        "FormatDescription": "Remove trailing whitespace"
+      }
+    ]
+  },
+  {
+    "FilePath": "src/Utils.cs",
+    "FileChanges": [
+      {
+        "LineNumber": 15,
+        "CharNumber": 1,
+        "DiagnosticId": "INDENTATION",
+        "FormatDescription": "Fix indentation"
+      }
+    ]
+  },
+  {
+    "FilePath": "src/Models.cs",
+    "FileChanges": []
+  }
+]

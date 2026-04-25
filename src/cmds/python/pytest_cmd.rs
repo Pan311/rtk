@@ -1,7 +1,7 @@
 //! Filters pytest output to show only failures and the summary line.
 
 use crate::core::runner;
-use crate::core::utils::{resolved_command, tool_exists, truncate};
+use crate::core::utils::{preserve_working_dir, resolved_command, tool_exists, truncate};
 use anyhow::Result;
 
 #[derive(Debug, PartialEq)]
@@ -14,9 +14,12 @@ enum ParseState {
 
 pub fn run(args: &[String], verbose: u8) -> Result<i32> {
     let mut cmd = if tool_exists("pytest") {
-        resolved_command("pytest")
+        let mut c = resolved_command("pytest");
+        preserve_working_dir(&mut c);
+        c
     } else {
         let mut c = resolved_command("python");
+        preserve_working_dir(&mut c);
         c.arg("-m").arg("pytest");
         c
     };

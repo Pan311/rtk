@@ -1,7 +1,7 @@
 //! Filters npm output and auto-injects the "run" subcommand when appropriate.
 
 use crate::core::runner;
-use crate::core::utils::resolved_command;
+use crate::core::utils::{resolved_command, preserve_working_dir};
 use anyhow::Result;
 
 /// Known npm subcommands that should NOT get "run" injected.
@@ -75,6 +75,7 @@ const NPM_SUBCOMMANDS: &[&str] = &[
 
 pub fn run(args: &[String], verbose: u8, skip_env: bool) -> Result<i32> {
     let mut cmd = resolved_command("npm");
+    preserve_working_dir(&mut cmd);
 
     // Determine if this is "npm run <script>" or another npm subcommand (install, list, etc.)
     // Only inject "run" when args look like a script name, not a known npm subcommand.

@@ -1,0 +1,13 @@
+Test run for C:\project\bin\Debug\net6.0\RtkDotnetSmoke.dll (.NETCoreApp,Version=v6.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.0.0
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 2 ms
+Failed RtkDotnetSmoke.UnitTest1.Test1 [2 ms]
+    Error Message:
+     Assert.AreEqual failed. Expected:<42>. Actual:<24>.
+
+Test Run Failed.

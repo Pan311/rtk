@@ -1,7 +1,7 @@
 //! Filters pip and uv package manager output.
 
 use crate::core::tracking;
-use crate::core::utils::{exit_code_from_output, resolved_command, tool_exists};
+use crate::core::utils::{exit_code_from_output, preserve_working_dir, resolved_command, tool_exists};
 use anyhow::{Context, Result};
 use serde::Deserialize;
 
@@ -52,6 +52,7 @@ pub fn run(args: &[String], verbose: u8) -> Result<i32> {
 
 fn run_list(base_cmd: &str, args: &[String], verbose: u8) -> Result<(String, String, i32)> {
     let mut cmd = resolved_command(base_cmd);
+    preserve_working_dir(&mut cmd);
 
     if base_cmd == "uv" {
         cmd.arg("pip");
@@ -84,6 +85,7 @@ fn run_list(base_cmd: &str, args: &[String], verbose: u8) -> Result<(String, Str
 
 fn run_outdated(base_cmd: &str, args: &[String], verbose: u8) -> Result<(String, String, i32)> {
     let mut cmd = resolved_command(base_cmd);
+    preserve_working_dir(&mut cmd);
 
     if base_cmd == "uv" {
         cmd.arg("pip");
@@ -116,6 +118,7 @@ fn run_outdated(base_cmd: &str, args: &[String], verbose: u8) -> Result<(String,
 
 fn run_passthrough(base_cmd: &str, args: &[String], verbose: u8) -> Result<(String, String, i32)> {
     let mut cmd = resolved_command(base_cmd);
+    preserve_working_dir(&mut cmd);
 
     if base_cmd == "uv" {
         cmd.arg("pip");

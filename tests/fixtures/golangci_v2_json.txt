@@ -1,0 +1,237 @@
+{
+  "Issues": [
+    {
+      "FromLinter": "errcheck",
+      "Text": "Error return value of `fmt.Printf` is not checked - this can lead to silent failures in production environments where logging is critical for debugging and monitoring system behavior",
+      "Severity": "error",
+      "SourceLines": [
+        "fmt.Printf(\"Hello, %s\", name)"
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": false,
+        "NewLines": [
+          "_, err := fmt.Printf(\"Hello, %s\", name)",
+          "if err != nil {",
+          "    log.Printf(\"Failed to print greeting: %v\", err)",
+          "}"
+        ],
+        "OldLines": [
+          "fmt.Printf(\"Hello, %s\", name)"
+        ]
+      },
+      "Pos": {
+        "Filename": "main.go",
+        "Offset": 45,
+        "Line": 10,
+        "Column": 2
+      }
+    },
+    {
+      "FromLinter": "gosimple",
+      "Text": "S1002: should omit comparison to bool - comparing a boolean value to true or false is redundant and can be simplified for better readability and performance",
+      "Severity": "warning",
+      "SourceLines": [
+        "if flag == true {"
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": false,
+        "NewLines": [
+          "if flag {"
+        ],
+        "OldLines": [
+          "if flag == true {"
+        ]
+      },
+      "Pos": {
+        "Filename": "utils.go",
+        "Offset": 78,
+        "Line": 15,
+        "Column": 4
+      }
+    },
+    {
+      "FromLinter": "ineffassign",
+      "Text": "ineffective assignment to `result` - the assigned value is never used, which may indicate a bug or unnecessary computation that wastes CPU cycles",
+      "Severity": "warning",
+      "SourceLines": [
+        "result := calculate()"
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": true,
+        "NewLines": [],
+        "OldLines": [
+          "result := calculate()"
+        ]
+      },
+      "Pos": {
+        "Filename": "utils.go",
+        "Offset": 123,
+        "Line": 25,
+        "Column": 2
+      }
+    },
+    {
+      "FromLinter": "unused",
+      "Text": "variable `temp` is unused - declared but never referenced, which may indicate dead code that should be removed to improve maintainability",
+      "Severity": "warning",
+      "SourceLines": [
+        "temp := \"unused variable\""
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": true,
+        "NewLines": [],
+        "OldLines": [
+          "temp := \"unused variable\""
+        ]
+      },
+      "Pos": {
+        "Filename": "utils.go",
+        "Offset": 156,
+        "Line": 30,
+        "Column": 2
+      }
+    },
+    {
+      "FromLinter": "goconst",
+      "Text": "string `magic_number` has 3 occurrences, make it a constant - repeated string literals should be extracted to named constants for better maintainability and to avoid typos",
+      "Severity": "info",
+      "SourceLines": [
+        "if value == \"magic_number\" {"
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": false,
+        "NewLines": [
+          "const magicNumber = \"magic_number\"",
+          "if value == magicNumber {"
+        ],
+        "OldLines": [
+          "if value == \"magic_number\" {"
+        ]
+      },
+      "Pos": {
+        "Filename": "constants.go",
+        "Offset": 89,
+        "Line": 12,
+        "Column": 13
+      }
+    }
+  ]
+}{
+  "Issues": [
+    {
+      "FromLinter": "errcheck",
+      "Text": "Error return value of `fmt.Printf` is not checked - this can lead to silent failures in production environments where logging is critical for debugging and monitoring system behavior",
+      "Severity": "error",
+      "SourceLines": [
+        "fmt.Printf(\"Hello, %s\", name)"
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": false,
+        "NewLines": [
+          "_, err := fmt.Printf(\"Hello, %s\", name)",
+          "if err != nil {",
+          "    log.Printf(\"Failed to print greeting: %v\", err)",
+          "}"
+        ],
+        "OldLines": [
+          "fmt.Printf(\"Hello, %s\", name)"
+        ]
+      },
+      "Pos": {
+        "Filename": "main.go",
+        "Offset": 45,
+        "Line": 10,
+        "Column": 2
+      }
+    },
+    {
+      "FromLinter": "gosimple",
+      "Text": "S1002: should omit comparison to bool - comparing a boolean value to true or false is redundant and can be simplified for better readability and performance",
+      "Severity": "warning",
+      "SourceLines": [
+        "if flag == true {"
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": false,
+        "NewLines": [
+          "if flag {"
+        ],
+        "OldLines": [
+          "if flag == true {"
+        ]
+      },
+      "Pos": {
+        "Filename": "main.go",
+        "Offset": 78,
+        "Line": 15,
+        "Column": 4
+      }
+    },
+    {
+      "FromLinter": "ineffassign",
+      "Text": "ineffective assignment to `result` - the assigned value is never used, which may indicate a bug or unnecessary computation that wastes CPU cycles",
+      "Severity": "warning",
+      "SourceLines": [
+        "result := calculate()"
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": true,
+        "NewLines": [],
+        "OldLines": [
+          "result := calculate()"
+        ]
+      },
+      "Pos": {
+        "Filename": "utils.go",
+        "Offset": 123,
+        "Line": 25,
+        "Column": 2
+      }
+    },
+    {
+      "FromLinter": "unused",
+      "Text": "variable `temp` is unused - declared but never referenced, which may indicate dead code that should be removed to improve maintainability",
+      "Severity": "warning",
+      "SourceLines": [
+        "temp := \"unused variable\""
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": true,
+        "NewLines": [],
+        "OldLines": [
+          "temp := \"unused variable\""
+        ]
+      },
+      "Pos": {
+        "Filename": "utils.go",
+        "Offset": 156,
+        "Line": 30,
+        "Column": 2
+      }
+    },
+    {
+      "FromLinter": "goconst",
+      "Text": "string `magic_number` has 3 occurrences, make it a constant - repeated string literals should be extracted to named constants for better maintainability and to avoid typos",
+      "Severity": "info",
+      "SourceLines": [
+        "if value == \"magic_number\" {"
+      ],
+      "Replacement": {
+        "NeedOnlyDelete": false,
+        "NewLines": [
+          "const magicNumber = \"magic_number\"",
+          "if value == magicNumber {"
+        ],
+        "OldLines": [
+          "if value == \"magic_number\" {"
+        ]
+      },
+      "Pos": {
+        "Filename": "constants.go",
+        "Offset": 89,
+        "Line": 12,
+        "Column": 13
+      }
+    }
+  ]
+}
