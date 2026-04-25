@@ -576,12 +576,13 @@ Filtre la sortie de `cargo nextest` pour n'afficher que les echecs.
 
 ---
 
-### `rtk vitest run` -- Tests Vitest
+### `rtk jest` / `rtk vitest` -- Tests Jest/Vitest
 
 **Economies :** ~99.5%
 
 ```bash
-rtk vitest run [args...]
+rtk jest [args...]
+rtk vitest [args...]
 ```
 
 ---
@@ -963,13 +964,13 @@ Les lignes repetees sont fusionnees : `[ERROR] Connection refused (x42)`.
 
 ---
 
-### `rtk curl` -- HTTP avec detection JSON
+### `rtk curl` -- HTTP avec troncature
 
 ```bash
 rtk curl [args...]
 ```
 
-Auto-detecte les reponses JSON et affiche le schema au lieu du contenu complet.
+Tronque les reponses longues et sauvegarde la sortie complete dans un fichier pour recuperation.
 
 ---
 
@@ -1258,7 +1259,8 @@ rtk verify
 | `ls` | `rtk ls` |
 | `tree` | `rtk tree` |
 | `wc` | `rtk wc` |
-| `vitest/jest` | `rtk vitest run` |
+| `jest` | `rtk jest` |
+| `vitest` | `rtk vitest` |
 | `tsc` | `rtk tsc` |
 | `eslint/biome` | `rtk lint` |
 | `prettier` | `rtk prettier` |

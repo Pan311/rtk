@@ -492,7 +492,7 @@ fn pr_status(args: &[String], _verbose: u8, _ultra_compact: bool) -> Result<i32>
         return run_passthrough("gh", "pr", &passthrough_args);
     }
 
-    let mut cmd = gh_cmd();
+    let mut cmd = resolved_command("gh");
     cmd.args(["pr", "status", "--json", pr_status_json_fields()]);
     for arg in args {
         cmd.arg(arg);

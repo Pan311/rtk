@@ -173,15 +173,16 @@ rtk gh run list                 # Workflow run status
 
 ### Test Runners
 ```bash
-rtk test cargo test             # Show failures only (-90%)
-rtk err npm run build           # Errors/warnings only
-rtk vitest run                  # Vitest compact (failures only)
+rtk jest                        # Jest compact (failures only)
+rtk vitest                      # Vitest compact (failures only)
 rtk playwright test             # E2E results (failures only)
 rtk pytest                      # Python tests (-90%)
 rtk go test                     # Go tests (NDJSON, -90%)
 rtk cargo test                  # Cargo tests (-90%)
 rtk rake test                   # Ruby minitest (-90%)
 rtk rspec                       # RSpec tests (JSON, -60%+)
+rtk err <cmd>                   # Filter errors only from any command
+rtk test <cmd>                  # Generic test wrapper - failures only (-90%)
 ```
 
 ### Build & Lint
@@ -236,7 +237,7 @@ rtk json config.json            # Structure without values
 rtk deps                        # Dependencies summary
 rtk env -f AWS                  # Filtered env vars
 rtk log app.log                 # Deduplicated logs
-rtk curl <url>                  # Auto-detect JSON + schema
+rtk curl <url>                  # Truncate + save full output
 rtk wget <url>                  # Download, strip progress bars
 rtk summary <long command>      # Heuristic summary
 rtk proxy <command>             # Raw passthrough + tracking
@@ -338,20 +339,16 @@ rtk init -g
 
 ### Native Windows (limited support)
 
-On native Windows (cmd.exe / PowerShell), RTK filters work but the hook does not auto-rewrite commands. RTK now includes **PowerShell cmdlet support** for native Windows optimization:
+On native Windows (cmd.exe / PowerShell), RTK filters work but the hook does not auto-rewrite commands:
 
 ```powershell
 # 1. Download and extract rtk-x86_64-pc-windows-msvc.zip from releases
 # 2. Add rtk.exe to your PATH
 # 3. Initialize (falls back to CLAUDE.md injection)
 rtk init -g
-# 4. Use rtk explicitly for shell commands
+# 4. Use rtk explicitly
 rtk cargo test
 rtk git status
-# 5. Use PowerShell cmdlets for Windows-specific operations
-rtk powershell Get-ChildItem          # Directory listing
-rtk powershell Get-Process            # Process management
-rtk powershell Get-Service            # Windows services
 ```
 
 **Important**: Do not double-click `rtk.exe` — it is a CLI tool that prints usage and exits immediately. Always run it from a terminal (Command Prompt, PowerShell, or Windows Terminal).
@@ -359,7 +356,6 @@ rtk powershell Get-Service            # Windows services
 | Feature | WSL | Native Windows |
 |---------|-----|----------------|
 | Filters (cargo, git, etc.) | Full | Full |
-| PowerShell cmdlets | N/A | Full (Get-ChildItem, Get-Process, etc.) |
 | Auto-rewrite hook | Yes | No (CLAUDE.md fallback) |
 | `rtk init -g` | Hook mode | CLAUDE.md mode |
 | `rtk gain` / analytics | Full | Full |
@@ -479,6 +475,15 @@ export RTK_TELEMETRY_DISABLED=1   # Blocks telemetry regardless of consent
     <img alt="StarMapper" src="https://starmapper.bruniaux.com/api/map-image/rtk-ai/rtk" />
   </picture>
 </a>
+
+## Core team
+
+- **Patrick Szymkowiak** — Founder
+  [GitHub](https://github.com/pszymkowiak) · [LinkedIn](https://www.linkedin.com/in/patrick-szymkowiak/)
+- **Florian Bruniaux** — Core contributor
+  [GitHub](https://github.com/FlorianBruniaux) · [LinkedIn](https://www.linkedin.com/in/florian-bruniaux-43408b83/)
+- **Adrien Eppling** — Core contributor
+  [GitHub](https://github.com/aeppling) · [LinkedIn](https://www.linkedin.com/in/adrien-eppling/)
 
 ## Contributing
 

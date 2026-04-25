@@ -2,7 +2,8 @@
 
 use crate::core::config;
 use crate::core::runner;
-use crate::core::utils::{preserve_working_dir, resolved_command, truncate};
+use crate::core::stream::exec_capture;
+use crate::core::utils::{resolved_command, truncate};
 use anyhow::Result;
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -99,16 +100,15 @@ pub(crate) fn parse_major_version(version_output: &str) -> u32 {
 /// Run `golangci-lint --version` and return the major version number.
 /// Returns 1 on any failure.
 pub(crate) fn detect_major_version() -> u32 {
-    let output = resolved_command("golangci-lint").arg("--version").output();
+    let mut cmd = resolved_command("golangci-lint");
+    cmd.arg("--version");
 
-    match output {
-        Ok(o) => {
-            let stdout = String::from_utf8_lossy(&o.stdout);
-            let stderr = String::from_utf8_lossy(&o.stderr);
-            let version_text = if stdout.trim().is_empty() {
-                &*stderr
+    match exec_capture(&mut cmd) {
+        Ok(r) => {
+            let version_text = if r.stdout.trim().is_empty() {
+                &r.stderr
             } else {
-                &*stdout
+                &r.stdout
             };
             parse_major_version(version_text)
         }
@@ -127,7 +127,6 @@ fn run_filtered(original_args: &[String], invocation: &RunInvocation, verbose: u
     let version = detect_major_version();
 
     let mut cmd = resolved_command("golangci-lint");
-    preserve_working_dir(&mut cmd);
     for arg in build_filtered_args(invocation, version) {
         cmd.arg(arg);
     }
