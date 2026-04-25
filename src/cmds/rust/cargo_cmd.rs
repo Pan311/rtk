@@ -2,7 +2,7 @@
 
 use crate::core::runner;
 use crate::core::stream::{BlockHandler, BlockStreamFilter, StreamFilter};
-use crate::core::utils::{resolved_command, truncate};
+use crate::core::utils::{preserve_working_dir, resolved_command, truncate};
 use anyhow::Result;
 use std::cmp::Ordering;
 use std::collections::HashMap;

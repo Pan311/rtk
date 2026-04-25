@@ -3,7 +3,7 @@
 use crate::core::runner::{self, RunOptions};
 use crate::core::stream::exec_capture;
 use crate::core::tracking;
-use crate::core::utils::resolved_command;
+use crate::core::utils::{preserve_working_dir, resolved_command};
 use anyhow::{Context, Result};
 use serde_json::Value;
 use std::ffi::OsString;

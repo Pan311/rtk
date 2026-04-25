@@ -2,7 +2,7 @@
 
 use crate::core::stream::exec_capture;
 use crate::core::tracking;
-use crate::core::utils::{ok_confirmation, resolved_command, strip_ansi, truncate};
+use crate::core::utils::{ok_confirmation, preserve_working_dir, resolved_command, strip_ansi, truncate};
 use anyhow::{Context, Result};
 use lazy_static::lazy_static;
 use regex::Regex;

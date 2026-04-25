@@ -2,7 +2,7 @@
 
 use crate::core::stream::exec_capture;
 use crate::core::tracking;
-use crate::core::utils::{package_manager_exec, resolved_command};
+use crate::core::utils::{package_manager_exec, preserve_working_dir, resolved_command};
 use crate::prettier_cmd;
 use crate::ruff_cmd;
 use anyhow::{Context, Result};

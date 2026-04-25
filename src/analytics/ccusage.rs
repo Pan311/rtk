@@ -5,7 +5,7 @@
 //! and graceful degradation when ccusage is unavailable.
 
 use crate::core::stream::exec_capture;
-use crate::core::utils::{resolved_command, tool_exists};
+use crate::core::utils::{preserve_working_dir, resolved_command, tool_exists};
 use anyhow::{Context, Result};
 use serde::Deserialize;
 use std::process::Command;

@@ -2,7 +2,7 @@
 
 use crate::core::tee::force_tee_hint;
 use crate::core::tracking;
-use crate::core::{stream::exec_capture, utils::resolved_command};
+use crate::core::{stream::exec_capture, utils::{preserve_working_dir, resolved_command}};
 use anyhow::{Context, Result};
 
 const MAX_RESPONSE_SIZE: usize = 500;
